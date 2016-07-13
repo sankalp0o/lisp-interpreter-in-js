@@ -45,17 +45,26 @@ var globalEnv = {
 		console.log(line);
 	},
 
-	'begin': function(args){
-		var temp;
-		for (i=0; i<args.length; i++){
-			temp = eval(args[i], env);
-		}
-		return temp;
+	'begin': function(){
+		return arguments[arguments.length-1];
 	},
 
-	'+': function(a,b){
-		return a+b;
-	}
+	'+': function(){  
+		var sum = 0;
+		for (j=0; j<arguments.length; j++){
+			sum+= arguments[j];
+		} 
+		return sum;
+	},
+
+	'*': function(){  
+		var product = 1;
+		for (i=0; i<arguments.length; i++){
+			product *= arguments[i];
+		} 
+		return product;
+	},
+
 
 };
 
@@ -65,8 +74,9 @@ var globalEnv = {
 
 
 function eval(expr, env){
-
-	if (env.hasOwnProperty(expr)) return env.expr;             // variable reference
+	if (env.hasOwnProperty(expr)) {                            // variable reference
+		return env[expr];
+	}
 
 	else if (!isNaN(expr)) return expr;                        // constant literal
 
@@ -78,10 +88,10 @@ function eval(expr, env){
 	}
 
 	else {                                                     // procedure calls
-		var funcName = env[expr[0]];
+		var funcName = env[expr.shift()];
 		var args = [];
-		for (i=1; i<expr.length; i++){
-			args.push(expr[i]);
+		for (var i=0; i<expr.length; i++){
+			args.push(eval(expr[i], env));
 		}
 		return funcName.apply(null, args);
 	}
@@ -92,7 +102,11 @@ function eval(expr, env){
 //------------------------------------------------------------------------TEST-CASES--------------------------------------------------------------------------
 
 //console.log(parse('(begin (define r 10) (* pi (* r r)))'))
-console.log(eval(parse('(+ 10 10)'), globalEnv));
-eval(parse('(write-line hello)'), globalEnv);
+//console.log(eval(parse('(+ 10 20 13)'), globalEnv));
+//eval(parse('(write-line (* 12 12))'), globalEnv);
+console.log(eval(parse("(begin (define r 10) (* 3 (* r r)))"), globalEnv));
+//console.log(eval(parse("(begin (define r 10) r)"), globalEnv));
+//console.log(eval(parse("(begin (+ 2 3 6 9 90) (+ 4 5 7 9) (+ 23 34))"), globalEnv));
+
 
 
