@@ -88,7 +88,7 @@ function eval(expr, env){
 	}
 
 	else {                                                     // procedure calls
-		var funcName = env[expr.shift()];
+		var funcName = eval(expr.shift(), env);
 		var args = [];
 		for (var i=0; i<expr.length; i++){
 			args.push(eval(expr[i], env));
@@ -98,13 +98,16 @@ function eval(expr, env){
 
 }
 
+function logEval(expr){
+	console.log(eval(parse(expr), globalEnv));
+}
 
 //------------------------------------------------------------------------TEST-CASES--------------------------------------------------------------------------
 
 //console.log(parse('(begin (define r 10) (* pi (* r r)))'))
 //console.log(eval(parse('(+ 10 20 13)'), globalEnv));
 //eval(parse('(write-line (* 12 12))'), globalEnv);
-console.log(eval(parse("(begin (define r 10) (* 3 (* r r)))"), globalEnv));
+logEval("(begin (define r 10) (* 3 (* r r)))");
 //console.log(eval(parse("(begin (define r 10) r)"), globalEnv));
 //console.log(eval(parse("(begin (+ 2 3 6 9 90) (+ 4 5 7 9) (+ 23 34))"), globalEnv));
 
