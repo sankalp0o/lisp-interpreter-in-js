@@ -87,6 +87,12 @@ function eval(expr, env){
 		return env[variableName];
 	}
 
+	else if (expr[0]==='lambda'){
+		var args = expr[1];
+		var body = expr[2];
+		return procedure(args, body, env);
+	}
+
 	else {                                                     // procedure calls
 		var funcName = eval(expr.shift(), env);
 		var args = [];
@@ -95,6 +101,13 @@ function eval(expr, env){
 		}
 		return funcName.apply(null, args);
 	}
+
+}
+
+
+function procedure(args, body, env){
+	var sampleFunction = function(x,y){return x+y};
+	return sampleFunction;
 
 }
 
@@ -107,9 +120,19 @@ function logEval(expr){
 //console.log(parse('(begin (define r 10) (* pi (* r r)))'))
 //console.log(eval(parse('(+ 10 20 13)'), globalEnv));
 //eval(parse('(write-line (* 12 12))'), globalEnv);
-logEval("(begin (define r 10) (* 3 (* r r)))");
+//logEval("(begin (define r 10) (* 3 (* r r)))");
 //console.log(eval(parse("(begin (define r 10) r)"), globalEnv));
 //console.log(eval(parse("(begin (+ 2 3 6 9 90) (+ 4 5 7 9) (+ 23 34))"), globalEnv));
+
+logEval('((lambda (x y) (+ x y)) 4 5)');
+logEval('(define summation (lambda (x y) (+ x y)))');
+logEval('(summation 5 7)')
+
+//logEval('(define circle-area (lambda (r) (* 3 (* r r)))');
+//logEval('(circle-area 10)');
+
+
+
 
 
 
