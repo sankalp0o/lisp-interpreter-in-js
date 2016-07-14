@@ -26,7 +26,7 @@ function readFromTokens(tokenArr){
 		tokenArr.shift();
 		return arr;
 	}
-	else return atomize(firstToken); //Have to write error messages for other cases
+	else return atomize(firstToken);
 }
 
 
@@ -51,7 +51,7 @@ var globalEnv = {
 
 	'+': function(){  
 		var sum = 0;
-		for (j=0; j<arguments.length; j++){
+		for (var j=0; j<arguments.length; j++){
 			sum+= arguments[j];
 		} 
 		return sum;
@@ -59,7 +59,7 @@ var globalEnv = {
 
 	'*': function(){  
 		var product = 1;
-		for (i=0; i<arguments.length; i++){
+		for (var i=0; i<arguments.length; i++){
 			product *= arguments[i];
 		} 
 		return product;
@@ -69,18 +69,15 @@ var globalEnv = {
 		return a-b;
 	},
 
-	'/': function(a,b){
-		return a/b;
-	},
-
-
 	'pi': Math.PI,
 
 	'abs': Math.abs,
 
-
 };
 
+['<', '>', '/', '==', '<=', '>=', '!='].forEach(function(op) {
+  globalEnv[op] = new Function("a, b", "return a " + op + " b;");
+});
 
 
 //------------------------------------------------------------------------EVALUATION-------------------------------------------------------------------
@@ -88,6 +85,7 @@ var globalEnv = {
 
 function eval(expr, env){
 	if (expr in env) {                                         // variable reference
+//		console.log("inside variable ref",  expr, env[expr]);
 		return env[expr];
 	}
 
@@ -103,29 +101,34 @@ function eval(expr, env){
 	else if (expr[0]==='lambda'){                              // procedures
 		var args = expr[1];
 		var body = expr[2];
-		var localEnv = Object.create(globalEnv);
-
+		var localEnv = Object.create(env);
+//		console.log('inside lambda', expr);
 		return function(){
 			for (var i=0; i<arguments.length; i++){
 				localEnv[args[i]] = arguments[i];
 			}
+//			console.log('evaluating lambda, env=', body, localEnv);
 			return eval(body, localEnv);
 		}
 
 	}
 
-	else if (expr[0]==='if'){
+	else if (expr[0]==='if'){                                  //conditions
 		var test = expr[1], conseq = expr[2], alt = expr[3];
 		if (eval(test, env)) return eval(conseq, env);
 		else return eval(alt,env);
 	}
 
 	else {                                                     // procedure calls
-		var funcName = eval(expr.shift(), env);
+//		console.log("inside proc call", expr);
+		var funcName = eval(expr[0], env);
+//		console.log('calculated funcName ', funcName);
 		var args = [];
-		for (var i=0; i<expr.length; i++){
+		for (var i=1; i<expr.length; i++){
 			args.push(eval(expr[i], env));
 		}
+//		console.log("calculated args", args);
+		if ((typeof funcName) !=='function') console.log(funcName+ ' is not a function. Calculating funcName in expression '+ expr);
 		return funcName.apply(null, args);
 	}
 
@@ -139,7 +142,6 @@ function logEval(expr){
 	//console.log(eval(parse(expr), globalEnv));
 	return eval(parse(expr), globalEnv);
 }
-
 
 var repl = require('repl');
 
