@@ -65,6 +65,19 @@ var globalEnv = {
 		return product;
 	},
 
+	'-': function(a,b){
+		return a-b;
+	},
+
+	'/': function(a,b){
+		return a/b;
+	},
+
+
+	'pi': Math.PI,
+
+	'abs': Math.abs,
+
 
 };
 
@@ -74,7 +87,7 @@ var globalEnv = {
 
 
 function eval(expr, env){
-	if (env.hasOwnProperty(expr)) {                            // variable reference
+	if (expr in env) {                                         // variable reference
 		return env[expr];
 	}
 
@@ -87,10 +100,24 @@ function eval(expr, env){
 		return env[variableName];
 	}
 
-	else if (expr[0]==='lambda'){
+	else if (expr[0]==='lambda'){                              // procedures
 		var args = expr[1];
 		var body = expr[2];
-		return procedure(args, body, env);
+		var localEnv = Object.create(globalEnv);
+
+		return function(){
+			for (var i=0; i<arguments.length; i++){
+				localEnv[args[i]] = arguments[i];
+			}
+			return eval(body, localEnv);
+		}
+
+	}
+
+	else if (expr[0]==='if'){
+		var test = expr[1], conseq = expr[2], alt = expr[3];
+		if (eval(test, env)) return eval(conseq, env);
+		else return eval(alt,env);
 	}
 
 	else {                                                     // procedure calls
@@ -105,15 +132,24 @@ function eval(expr, env){
 }
 
 
-function procedure(args, body, env){
-	var sampleFunction = function(x,y){return x+y};
-	return sampleFunction;
+//-----------------------------------------------------------------------REPL-----------------
 
-}
 
 function logEval(expr){
-	console.log(eval(parse(expr), globalEnv));
+	//console.log(eval(parse(expr), globalEnv));
+	return eval(parse(expr), globalEnv);
 }
+
+
+var repl = require('repl');
+
+repl.start({prompt: '> ', eval: myEval});
+
+function myEval(cmd, context, filename, callback) {
+  callback(null,logEval(cmd.slice(0, cmd.length - 1)
+));
+}
+
 
 //------------------------------------------------------------------------TEST-CASES--------------------------------------------------------------------------
 
@@ -124,15 +160,16 @@ function logEval(expr){
 //console.log(eval(parse("(begin (define r 10) r)"), globalEnv));
 //console.log(eval(parse("(begin (+ 2 3 6 9 90) (+ 4 5 7 9) (+ 23 34))"), globalEnv));
 
-logEval('((lambda (x y) (+ x y)) 4 5)');
+/*logEval('((lambda (x y) (+ x y)) 4 5)');
+
 logEval('(define summation (lambda (x y) (+ x y)))');
-logEval('(summation 5 7)')
+logEval('(summation 5 7)');
 
-//logEval('(define circle-area (lambda (r) (* 3 (* r r)))');
-//logEval('(circle-area 10)');
+logEval('(define circle-area (lambda (r) (* 3 (* r r))))');
+logEval('(circle-area 10)');
 
+logEval('(+ 12 23)');
 
-
-
-
+*/
+// console.log(tokenize('(+ 10 20)'));
 
