@@ -85,7 +85,6 @@ var globalEnv = {
 
 function eval(expr, env){
 	if (expr in env) {                                         // variable reference
-//		console.log("inside variable ref",  expr, env[expr]);
 		return env[expr];
 	}
 
@@ -102,12 +101,10 @@ function eval(expr, env){
 		var args = expr[1];
 		var body = expr[2];
 		var localEnv = Object.create(env);
-//		console.log('inside lambda', expr);
 		return function(){
 			for (var i=0; i<arguments.length; i++){
 				localEnv[args[i]] = arguments[i];
 			}
-//			console.log('evaluating lambda, env=', body, localEnv);
 			return eval(body, localEnv);
 		}
 
@@ -120,14 +117,11 @@ function eval(expr, env){
 	}
 
 	else {                                                     // procedure calls
-//		console.log("inside proc call", expr);
 		var funcName = eval(expr[0], env);
-//		console.log('calculated funcName ', funcName);
 		var args = [];
 		for (var i=1; i<expr.length; i++){
 			args.push(eval(expr[i], env));
 		}
-//		console.log("calculated args", args);
 		if ((typeof funcName) !=='function') console.log(funcName+ ' is not a function. Calculating funcName in expression '+ expr);
 		return funcName.apply(null, args);
 	}
@@ -135,11 +129,10 @@ function eval(expr, env){
 }
 
 
-//-----------------------------------------------------------------------REPL-----------------
+//--------------------------------------------------------------------------REPL---------------------------------------------------------------
 
 
 function logEval(expr){
-	//console.log(eval(parse(expr), globalEnv));
 	return eval(parse(expr), globalEnv);
 }
 
