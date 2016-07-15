@@ -159,25 +159,4 @@ function myEval(cmd, context, filename, callback) {
 }
 
 
-//------------------------------------------------------------------------TEST-CASES--------------------------------------------------------------------------
-
-//console.log(parse('(begin (define r 10) (* pi (* r r)))'))
-//console.log(eval(parse('(+ 10 20 13)'), globalEnv));
-//eval(parse('(write-line (* 12 12))'), globalEnv);
-//logEval("(begin (define r 10) (* 3 (* r r)))");
-//console.log(eval(parse("(begin (define r 10) r)"), globalEnv));
-//console.log(eval(parse("(begin (+ 2 3 6 9 90) (+ 4 5 7 9) (+ 23 34))"), globalEnv));
-
-/*logEval('((lambda (x y) (+ x y)) 4 5)');
-
-logEval('(define summation (lambda (x y) (+ x y)))');
-logEval('(summation 5 7)');
-
-logEval('(define circle-area (lambda (r) (* 3 (* r r))))');
-logEval('(circle-area 10)');
-
-logEval('(+ 12 23)');
-
-*/
-// console.log(tokenize('(+ 10 20)'));
 
