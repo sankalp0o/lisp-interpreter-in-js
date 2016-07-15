@@ -107,7 +107,20 @@ function eval(expr, env){
 			}
 			return eval(body, localEnv);
 		}
+	}
 
+	else if (expr[0]==='set!'){                                // assignment
+		var variableName = expr[1];
+		if (env.hasOwnProperty(variableName)){
+			var variableValue = eval(expr[2], env);
+			env[variableName] = variableValue;
+			return env[variableName];
+		}
+		else console.log(variableName, ' not found');
+	}
+
+	else if (expr[0]==='quote'){                              // quotation
+		return expr[1];
 	}
 
 	else if (expr[0]==='if'){                                  //conditions
